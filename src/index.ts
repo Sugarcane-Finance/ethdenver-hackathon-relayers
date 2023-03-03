@@ -7,6 +7,7 @@ import cors from "cors";
 import getPCIPublicKey from "./circle/getPCIPublicKey";
 import createCard from "./circle/createCard";
 import createPayment from "./circle/createPayment";
+import { transferUSDC } from "./oz/goerli/usdc";
 
 const port = process.env.PORT || "8080";
 
@@ -57,7 +58,7 @@ app.post("/create-card", async (req, res) => {
 });
 
 app.post("/create-payment", async (req, res) => {
-  const { amount, cardId } = req.body;
+  const { amount, cardId, address } = req.body;
 
   const params = {
     idempotencyKey: faker.datatype.uuid(),
@@ -80,6 +81,8 @@ app.post("/create-payment", async (req, res) => {
 
   const payment = await createPayment(params);
   console.log({ payment });
+
+  await transferUSDC(address, amount);
 
   res.send(payment);
 });
