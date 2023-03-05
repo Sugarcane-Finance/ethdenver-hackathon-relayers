@@ -48,6 +48,37 @@ const abi = [
       {
         indexed: true,
         internalType: "address",
+        name: "oldExecuteOnboardReceiver",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newExecuteOnboardReceiver",
+        type: "address",
+      },
+    ],
+    name: "ExecuteOnboardReceiverUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "admin",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
         name: "oldGasService",
         type: "address",
       },
@@ -422,6 +453,19 @@ const abi = [
     name: "onboardAccount",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "onboardedAddresses",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

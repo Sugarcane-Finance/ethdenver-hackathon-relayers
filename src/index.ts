@@ -10,7 +10,12 @@ import getPCIPublicKey from "./circle/getPCIPublicKey";
 import createCard from "./circle/createCard";
 import createPayment from "./circle/createPayment";
 import { transferUSDC } from "./oz/goerli/usdc";
-import { recordInvestment } from "./contracts/sugarcaneManagerPrimaryBase";
+import {
+  recordInvestment,
+  onboardAccount as onboardToBase,
+} from "./contracts/sugarcaneManagerPrimaryBase";
+
+import { onboardAccount as onboardToGoerli } from "./oz/goerli/sugarcaneManagerPrimaryGoerli";
 
 const port = process.env.PORT || "8080";
 
@@ -22,6 +27,21 @@ app.use(bodyParser.json({ limit: "5mb" }));
 
 app.get("/", (_req, res) => {
   res.send("Alive");
+});
+
+app.post("/onboard", async (req, res) => {
+  const { address } = req.body;
+
+  await Promise.all([
+    onboardToBase(address).catch((e) => {
+      console.error("onboardToBase error: ", e);
+    }),
+    onboardToGoerli(address).catch((e) => {
+      console.error("onboardToGoerli error: ", e);
+    }),
+  ]);
+
+  res.send({});
 });
 
 app.get("/pci-public-key", async (req, res) => {

@@ -51,7 +51,40 @@ export const recordInvestment = async ({
     initialAmountUsd
   );
 
-  console.log("about to await the txn");
+  const receipt = await tx
+    .send({
+      from: signer.address,
+      gas: await tx.estimateGas(),
+    })
+    .once("transactionHash", (txhash: string) => {
+      console.log(`Mining transaction ...`);
+      console.log(`https://goerli.basescan.org/tx/${txhash}`);
+    });
+
+  console.log(`Mined in block ${receipt.blockNumber}`);
+};
+
+export const onboardAccount = async (address: string) => {
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider(
+      isLocal
+        ? "http://0.0.0.0:8545"
+        : `https://base-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`
+    )
+  );
+
+  const signer = web3.eth.accounts.privateKeyToAccount(
+    process.env.BASE_GOERLI_RELAYER_PRIVATE_KEY || ""
+  );
+
+  web3.eth.accounts.wallet.add(signer);
+  const contract = new web3.eth.Contract(
+    //@ts-ignore
+    abi,
+    smartContractAddress
+  );
+
+  const tx = contract.methods.onboardAccount(address);
 
   const receipt = await tx
     .send({
@@ -62,6 +95,7 @@ export const recordInvestment = async ({
       console.log(`Mining transaction ...`);
       console.log(`https://goerli.basescan.org/tx/${txhash}`);
     });
-  // The transaction is now on chain!
+
   console.log(`Mined in block ${receipt.blockNumber}`);
+  console.log(`Done onboarding ${address} to base`);
 };
