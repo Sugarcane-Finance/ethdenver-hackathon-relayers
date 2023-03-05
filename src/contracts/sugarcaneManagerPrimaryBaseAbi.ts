@@ -456,6 +456,52 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "signerAddress_",
+        type: "address",
+      },
+    ],
+    name: "onboardDetails",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "onboardingIndex",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "onboardedBlock",
+            type: "uint256",
+          },
+          {
+            internalType: "uint64",
+            name: "timestamp",
+            type: "uint64",
+          },
+          {
+            internalType: "address",
+            name: "holdings",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "isOnboarded",
+            type: "bool",
+          },
+        ],
+        internalType: "struct SugarcaneLib.OnboardAccountDetail",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "onboardedAddresses",
     outputs: [

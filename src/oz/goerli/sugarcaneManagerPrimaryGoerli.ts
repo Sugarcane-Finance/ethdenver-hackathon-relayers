@@ -26,3 +26,31 @@ export const onboardAccount = async (address: string) => {
   await contract.onboardAccount(address);
   console.log(`Done onboarding ${address} to goerli`);
 };
+
+interface OnboardDetailsParams {
+  onboardingIndex: string;
+  onboardedBlock: string;
+  timestamp: string;
+  holdingsAddress: string;
+  isOnboarded: boolean;
+}
+export const onboardDetails = async (
+  address: string
+): Promise<OnboardDetailsParams> => {
+  //@ts-ignore
+  const contract = new ethers.Contract(smartContractAddress, abi, signer);
+  console.log({ address });
+  const res = await contract.onboardDetails(address);
+  console.log("============");
+  console.log(res);
+  console.log("============");
+  console.log(`Fetched onboard details ${address} to goerli`);
+
+  return {
+    onboardingIndex: res[0],
+    onboardedBlock: res[1],
+    timestamp: res[2],
+    holdingsAddress: res[3],
+    isOnboarded: res[4],
+  };
+};

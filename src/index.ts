@@ -13,9 +13,13 @@ import { transferUSDC } from "./oz/goerli/usdc";
 import {
   recordInvestment,
   onboardAccount as onboardToBase,
+  // onboardDetails as onboardDetailsFromBase,
 } from "./contracts/sugarcaneManagerPrimaryBase";
 
-import { onboardAccount as onboardToGoerli } from "./oz/goerli/sugarcaneManagerPrimaryGoerli";
+import {
+  onboardAccount as onboardToGoerli,
+  onboardDetails as onboardDetailsFromGoerli,
+} from "./oz/goerli/sugarcaneManagerPrimaryGoerli";
 
 const port = process.env.PORT || "8080";
 
@@ -31,6 +35,8 @@ app.get("/", (_req, res) => {
 
 app.post("/onboard", async (req, res) => {
   const { address } = req.body;
+
+  console.log("onboarding for ", address);
 
   await Promise.all([
     onboardToBase(address).catch((e) => {
@@ -105,7 +111,10 @@ app.post("/create-payment", async (req, res) => {
   const payment = await createPayment(params);
   console.log({ payment });
 
-  await transferUSDC(address, amount);
+  const onboardingDetails = await onboardDetailsFromGoerli(address);
+  console.log({ onboardingDetails });
+
+  await transferUSDC(onboardingDetails.holdingsAddress, amount);
 
   console.log("USDC transferred. Amount: ", amount);
 

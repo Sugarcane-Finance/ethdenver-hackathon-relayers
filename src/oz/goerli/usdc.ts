@@ -26,3 +26,11 @@ export const transferUSDC = async (toAddress: string, amount: string) => {
   await usdcContract.transfer(toAddress, amount + "000000");
   console.log(`Done mining ${amount}USDC to ${toAddress}`);
 };
+
+export const balanceOfUSDC = async (toAddress: string) => {
+  //@ts-ignore
+  const usdcContract = new ethers.Contract(usdcContractAddress, abi, signer);
+  const res = await usdcContract.balanceOf(toAddress);
+  console.log(res);
+  return res;
+};
