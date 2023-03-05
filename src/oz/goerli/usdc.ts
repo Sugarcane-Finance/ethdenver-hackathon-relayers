@@ -22,6 +22,7 @@ const signer = new DefenderRelaySigner(defenderCredentials, provider, {
 export const transferUSDC = async (toAddress: string, amount: string) => {
   //@ts-ignore
   const usdcContract = new ethers.Contract(usdcContractAddress, abi, signer);
+  console.log({ toAddress, amount });
   await usdcContract.transfer(toAddress, amount + "000000");
   console.log(`Done mining ${amount}USDC to ${toAddress}`);
 };

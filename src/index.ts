@@ -1,5 +1,7 @@
 require("dotenv").config();
+import "express-async-errors";
 
+import { Request, Response, NextFunction } from "express";
 import { faker } from "@faker-js/faker";
 import express from "express";
 import bodyParser from "body-parser";
@@ -8,6 +10,7 @@ import getPCIPublicKey from "./circle/getPCIPublicKey";
 import createCard from "./circle/createCard";
 import createPayment from "./circle/createPayment";
 import { transferUSDC } from "./oz/goerli/usdc";
+import { recordInvestment } from "./contracts/sugarcaneManagerPrimaryBase";
 
 const port = process.env.PORT || "8080";
 
@@ -17,7 +20,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "5mb" }));
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.send("Alive");
 });
 
@@ -84,13 +87,42 @@ app.post("/create-payment", async (req, res) => {
 
   await transferUSDC(address, amount);
 
+  console.log("USDC transferred. Amount: ", amount);
+
   res.send(payment);
+});
+
+app.post("/execute-transaction", async (req, res) => {
+  const { address, transaction, amount } = req.body;
+
+  console.log({ address, transaction });
+
+  await recordInvestment({
+    address,
+    chainId: 80001,
+    protocolId: process.env.PROTOCOL_ID_AAVE || "",
+    initialAmountUsd: amount,
+  });
+
+  console.log("Recorded badge");
+
+  // TODO send signed txn and address to defender
+
+  console.log("Forwarded signed txn to defender");
+
+  res.send({});
 });
 
 app.post("/", (req, res) => {
   res.send({
     res: req.body.blah,
   });
+});
+
+app.use(async (err: any, req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+  res.status(500);
+  res.send(err);
 });
 
 app.listen(port, () => {
